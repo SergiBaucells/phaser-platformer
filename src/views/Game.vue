@@ -7,6 +7,32 @@ import Phaser from 'phaser'
 import wall from '../assets/wall.png'
 import ground from '../assets/ground.png'
 import player from '../assets/player.png'
+import coin from '../assets/coin.png'
+import enemy from '../assets/enemy.png'
+
+let score = 0
+let scoreText
+
+// TODO: Detectar quan l'usuari surt del mon i executar un die
+
+function takeCoin (player, coin) {
+  // TODO: Executar el so que toca (coin.mp3) + Actualitzar un score de punts
+  coin.disableBody(true, true)
+  score = score + 10
+  // this.add.text(10, 10, 'Score: ' + score, { fontSize: '12px', fill: '#000' })
+  scoreText.setText('Score: ' + score)
+}
+
+function die (player, enemy) {
+  // TODO: Executar el so que toca (coin.mp3)
+  // TODO: Actualitzar un score de punts
+  // TODO: Shake
+  // TODO: Reiniciar lvl
+  // TODO: Display emb el número de vides, mostrar-les i si s'agotes s'atura el joc
+  // TODO: Animacions
+  player.disableBody(true, true)
+}
+
 export default {
   name: 'Game',
   mounted () {
@@ -29,6 +55,8 @@ export default {
           // Imatges
           this.load.image('wall', wall)
           this.load.image('ground', ground)
+          this.load.image('coin', coin)
+          this.load.image('enemy', enemy)
           this.load.spritesheet('player', player, { frameWidth: 28, frameHeight: 22 })
 
           // Audio
@@ -58,7 +86,7 @@ export default {
 
           // Player
           this.player = this.physics.add.sprite(500 / 2, 200 / 2 - 50, 'player')
-          this.player.setCollideWorldBounds(true)
+          // this.player.setCollideWorldBounds(true)
           this.player.setBounce(0.2)
           this.physics.add.collider(this.player, this.level)
 
@@ -75,6 +103,23 @@ export default {
             frameRate: 5,
             repeat: -1
           })
+
+          // Add coins
+          this.coins = this.physics.add.group()
+          this.coins.create(140, 200 / 2, 'coin')
+          this.coins.create(170, 200 / 2, 'coin')
+          this.coins.create(200, 200 / 2, 'coin')
+          this.physics.add.collider(this.coins, this.level)
+          this.physics.add.overlap(this.player, this.coins, takeCoin, null, this)
+
+          // Score
+          scoreText = this.add.text(10, 10, 'Score: 0', { fontSize: '12px', fill: '#000' })
+
+          // Enemy
+          this.enemies = this.physics.add.group()
+          this.enemies.create(500 / 2 + 130, 200 / 2, 'enemy')
+          this.physics.add.collider(this.enemies, this.level)
+          this.physics.add.overlap(this.player, this.enemies, die, null, this)
         },
         update () {
           this.player.anims.play('idle', true)
