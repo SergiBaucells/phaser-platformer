@@ -27,8 +27,7 @@ function die (player, enemy) {
   // TODO: Executar el so que toca (coin.mp3)
   // TODO: Actualitzar un score de punts
   // TODO: Shake
-  // TODO: Reiniciar lvl
-  // TODO: Display emb el número de vides, mostrar-les i si s'agotes s'atura el joc
+  player.scene.cameras.main.shake(500)
   // TODO: Animacions
   player.disableBody(true, true)
 }
@@ -120,6 +119,15 @@ export default {
           this.enemies.create(500 / 2 + 130, 200 / 2, 'enemy')
           this.physics.add.collider(this.enemies, this.level)
           this.physics.add.overlap(this.player, this.enemies, die, null, this)
+
+          //  prepare loser txt
+          this.loserText = this.add.text(500 / 2, 200 / 2 - 50, 'You lose!', { fontSize: '24px', fill: '#000' }).setVisible(false)
+          this.cameras.main.on('camerashakestart', () => {
+            this.loserText.setVisible(true)
+          })
+          this.cameras.main.on('camerashakecomplete', () => {
+            this.loserText.setVisible(false)
+          })
         },
         update () {
           this.player.anims.play('idle', true)
